@@ -99,6 +99,8 @@ program main
             read(line(45:49), '(F5.2)', iostat=iost) depth
         end if
 
+
+
         ! 继续往后读取
         read(line(50:), &
         '(F3.2,F2.1,A1,F2.1,A1,&
@@ -107,6 +109,10 @@ program main
         depsig, mag1, mtyp1, mag2, mtyp2, &
         ttab, locprec, subinf, maxints, dmgcls, tsmcls, &
         district, region, regionname, nsta, hypflg
+
+        ! 对mag进行检查
+        if (mag1 < 0.0) call judge_mag(line(53:54), mag1)
+        if (mag2 < 0.0) call judge_mag(line(56:57), mag2)
 
 
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -130,3 +136,30 @@ program main
 
 
 end program
+
+
+!!! 对mag部分进行讨论
+subroutine judge_mag(sub_str, mag)
+    implicit none 
+    character(len=2) :: sub_str
+    real :: mag
+
+    integer :: i
+
+    read(sub_str(2:2), '(I1)') i 
+
+    if (sub_str(1:1) == '-') then 
+        mag = -0.1*i
+    else if (sub_str(1:1) == 'A') then 
+        mag = -1.0 - 0.1*i
+    else if (sub_str(1:1) == 'B') then 
+        mag = -2.0 - 0.1*i
+    else if (sub_str(1:1) == 'C') then 
+        mag = -3.0 - 0.1*i
+    else 
+        ! 自定义的值，表示None
+        mag = -9.0
+    endif
+
+
+end subroutine
